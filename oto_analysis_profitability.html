@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OTO — Analysis / Profitability</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--bg2:#181c25;--bg3:#1e2330;--bg4:#252b3b;
+  --border:#2a3044;--border2:#3a4260;
+  --text:#e8eaf0;--text2:#8b90a0;--text3:#5a6070;
+  --blue:#4a7eff;--blue-bg:#1a2a4a;--blue-light:#6b97ff;
+  --green:#2ecc71;--green-bg:#0d2d1a;--green-light:#4ade80;
+  --amber:#f39c12;--amber-bg:#2d2000;
+  --red:#e74c3c;--red-bg:#2d0f0d;
+  --purple:#9b59b6;--purple-bg:#1e0d2d;
+  --radius:8px;--radius-lg:12px;
+}
+html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ── Sidebar ── */
+.sidebar{width:180px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.logo{padding:14px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.logo-box{width:26px;height:26px;background:var(--blue);border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#fff}
+.logo-text{font-weight:500;font-size:13px}
+.nav-tabs{display:flex;border-bottom:1px solid var(--border)}
+.nav-tab{flex:1;padding:8px 0;text-align:center;font-size:11px;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent}
+.nav-tab.active{color:var(--blue-light);border-bottom-color:var(--blue)}
+.nav-section{padding:8px 0}
+.nav-label{padding:4px 14px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.nav-item{display:flex;align-items:center;gap:7px;padding:6px 14px;cursor:pointer;color:var(--text2);border-left:2px solid transparent;font-size:12px;transition:all .12s}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--bg3);color:var(--blue-light);border-left-color:var(--blue)}
+.nav-icon{width:13px;height:13px;opacity:.6;flex-shrink:0}
+.badge{background:var(--blue);color:#fff;font-size:9px;padding:1px 5px;border-radius:20px;margin-left:auto}
+.badge.new{background:var(--green)}
+.badge.beta{background:var(--purple)}
+
+/* ── Main ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:46px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:10px;flex-shrink:0}
+.topbar-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.btn{padding:5px 12px;border-radius:var(--radius);border:1px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;font-size:12px;transition:all .12s;display:inline-flex;align-items:center;gap:5px}
+.btn:hover{background:var(--bg3)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{opacity:.9}
+.content{flex:1;overflow-y:auto;padding:20px 22px}
+
+/* ── Page header ── */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.page-title{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:500}
+
+/* ── Analysis tabs ── */
+.analysis-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;gap:0}
+.atab{padding:8px 16px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;font-size:12px;transition:all .12s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.atab:hover{color:var(--text)}
+.atab.active{color:var(--blue-light);border-bottom-color:var(--blue)}
+.atab .new-pill{background:var(--green-bg);color:var(--green-light);font-size:9px;padding:1px 5px;border-radius:10px;border:1px solid var(--green)}
+
+/* ── Layer navigation ── */
+.layer-nav{display:flex;align-items:center;gap:0;margin-bottom:20px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:4px;width:fit-content}
+.layer-btn{padding:6px 16px;border-radius:8px;cursor:pointer;font-size:12px;color:var(--text2);transition:all .15s;white-space:nowrap;border:none;background:transparent}
+.layer-btn:hover{color:var(--text)}
+.layer-btn.active{background:var(--bg4);color:var(--text);border:1px solid var(--border2)}
+
+/* ── Stat cards row ── */
+.stat-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;position:relative;overflow:hidden}
+.stat-card.clickable{cursor:pointer;transition:border-color .15s}
+.stat-card.clickable:hover{border-color:var(--border2)}
+.stat-label{font-size:11px;color:var(--text3);margin-bottom:6px}
+.stat-value{font-size:22px;font-weight:500;margin-bottom:4px}
+.stat-sub{font-size:11px;color:var(--text3)}
+.stat-sub.up{color:var(--green)}
+.stat-sub.down{color:var(--red)}
+.stat-sub.warn{color:var(--amber)}
+.status-dot{width:10px;height:10px;border-radius:50%;position:absolute;top:14px;right:14px}
+
+/* ── Section titles ── */
+.section-title{font-size:13px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-sub{font-size:11px;color:var(--blue-light);margin-bottom:16px}
+
+/* ── Cards ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px}
+.card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.card-title{font-weight:500;font-size:13px;flex:1}
+.card-body{padding:16px}
+
+/* ── Table ── */
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+th{padding:8px 12px;text-align:left;font-size:11px;color:var(--text3);font-weight:400;border-bottom:1px solid var(--border);background:var(--bg3)}
+td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2)}
+tr:last-child td{border-bottom:none}
+tr.clickable-row:hover td{background:var(--bg3);cursor:pointer}
+.carrier-badge{padding:2px 8px;border-radius:4px;font-size:11px;background:var(--bg4);color:var(--text2)}
+.ratio-pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.ratio-pill.good{background:var(--green-bg);color:var(--green)}
+.ratio-pill.warn{background:var(--amber-bg);color:var(--amber)}
+.ratio-pill.bad{background:var(--red-bg);color:var(--red)}
+
+/* ── Bar chart ── */
+.bar-chart-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar-chart-label{width:110px;font-size:11px;color:var(--text2);flex-shrink:0;text-align:right}
+.bar-track{flex:1;height:8px;background:var(--bg4);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width .4s}
+.bar-val{width:60px;font-size:11px;color:var(--text2);flex-shrink:0}
+
+/* ── Insight box ── */
+.insight-box{border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:12px}
+.insight-box.blue{background:var(--blue-bg);border:1px solid var(--blue)}
+.insight-box.green{background:var(--green-bg);border:1px solid var(--green)}
+.insight-box.amber{background:var(--amber-bg);border:1px solid var(--amber)}
+.insight-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.insight-icon.blue{background:var(--blue)}
+.insight-icon.green{background:var(--green)}
+.insight-icon.amber{background:var(--amber)}
+.insight-title{font-weight:500;margin-bottom:3px;font-size:13px}
+.insight-text{font-size:12px;color:var(--text2);line-height:1.5}
+.insight-action{margin-top:8px;display:flex;gap:8px}
+
+/* ── Rule change modal ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{width:420px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px}
+.modal-title{font-size:15px;font-weight:500;margin-bottom:16px}
+.modal-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
+.modal-row:last-of-type{border-bottom:none}
+.modal-key{color:var(--text3)}
+.modal-val{color:var(--text);font-weight:500}
+.modal-actions{margin-top:16px;display:flex;gap:8px}
+
+/* ── Drill-down panel ── */
+.drill-panel{display:none;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px}
+.drill-panel.open{display:block}
+.drill-close{float:right;cursor:pointer;color:var(--text3);font-size:16px;line-height:1}
+
+/* ── Two-col grid ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-box">O</div>
+    <span class="logo-text">OTO</span>
+  </div>
+  <div class="nav-tabs">
+    <div class="nav-tab active">Main</div>
+    <div class="nav-tab">Settings</div>
+  </div>
+  <div style="flex:1;overflow-y:auto">
+    <div class="nav-section">
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        Home
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Shipping</div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="14" height="10" rx="2"/><path d="M1 7h14M5 4V2M11 4V2"/></svg>
+        Shipments
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l-2 2 2 2"/><path d="M1 10h8a4 4 0 000-8H7"/></svg>
+        Returns
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8h6M8 5v6"/></svg>
+        Price Calculator
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/></svg>
+        ALSOUQ <span class="badge new">New</span>
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 14s0-4 6-4 6 4 6 4"/></svg>
+        Customer Service
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Performance</div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="9" width="4" height="6" rx="1"/><rect x="6" y="5" width="4" height="10" rx="1"/><rect x="11" y="1" width="4" height="14" rx="1"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item active">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l4-4 3 3 5-6"/></svg>
+        Analysis
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h6l4 4v8a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/></svg>
+        Reports
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l1.5 4h4l-3.2 2.4 1.2 4L8 10l-3.5 2.4 1.2-4L2.5 6h4z"/></svg>
+        AI Recommend... <span class="badge beta">Beta</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Integrations</div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8h3M11 8h3M8 2v3M8 11v3"/><circle cx="8" cy="8" r="3"/></svg>
+        Sales Channels
+      </div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 8a3 3 0 106 0 3 3 0 00-6 0"/><path d="M1 14s0-3 7-3 7 3 7 3"/></svg>
+        Shipping Partners
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">OTO PACK</div>
+      <div class="nav-item">Configuration</div>
+      <div class="nav-item">Inventory</div>
+      <div class="nav-item">Operations</div>
+      <div class="nav-item">Purchase Orders</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">OTO FLEX</div>
+    </div>
+  </div>
+  <div style="padding:10px;border-top:1px solid var(--border)">
+    <div style="background:var(--blue);border-radius:var(--radius);padding:8px 10px">
+      <div style="font-size:10px;color:rgba(255,255,255,.7)">OTO Modules</div>
+      <div style="font-size:11px;font-weight:500;color:#fff">Enterprise Plan</div>
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <span style="font-size:13px;font-weight:500">Analysis</span>
+    <div class="topbar-right">
+      <button class="btn">
+        <svg style="width:12px;height:12px" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 4h14M4 8h8M7 12h2"/></svg>
+        + Add Order
+      </button>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:5px 10px;font-size:12px;display:flex;align-items:center;gap:5px">
+        <svg style="width:12px;height:12px;color:var(--amber)" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 5h5l-4 3 1.5 5L8 11l-4.5 3L5 9 1 6h5z"/></svg>
+        13.00
+      </div>
+      <button class="btn">Search by Order ID</button>
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center">
+        <svg style="width:12px;height:12px" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2a4 4 0 014 4c0 3 1 4 2 5H2c1-1 2-2 2-5a4 4 0 014-4z"/><path d="M6 13a2 2 0 004 0"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <div class="page-title">
+        <svg style="width:16px;height:16px;color:var(--blue-light)" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l4-4 3 3 5-6"/></svg>
+        Analysis
+      </div>
+      <button class="btn primary">
+        <svg style="width:12px;height:12px" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        Manage Widgets
+      </button>
+    </div>
+
+    <!-- Analysis tabs -->
+    <div class="analysis-tabs">
+      <div class="atab" onclick="switchTab(this,'overview')">Overview</div>
+      <div class="atab" onclick="switchTab(this,'sla')">SLA Performance</div>
+      <div class="atab" onclick="switchTab(this,'delivery')">Delivery Company</div>
+      <div class="atab" onclick="switchTab(this,'accounting')">Shipping Accounting</div>
+      <div class="atab" onclick="switchTab(this,'sales')">Sales</div>
+      <div class="atab" onclick="switchTab(this,'receiver')">Receiver Details</div>
+      <div class="atab" onclick="switchTab(this,'flex')">OTO FLEX</div>
+      <div class="atab" onclick="switchTab(this,'pack')">OTO PACK</div>
+      <div class="atab active" onclick="switchTab(this,'profitability')">
+        Profitability
+        <span class="new-pill">New</span>
+      </div>
+    </div>
+
+    <!-- Profitability content -->
+    <div id="tab-profitability">
+
+      <!-- Layer navigation -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div>
+          <div style="font-size:14px;font-weight:500;margin-bottom:2px">Profitability</div>
+          <div class="section-sub">Track shipping cost vs revenue, identify drain products and optimise carrier routing.</div>
+        </div>
+        <div class="layer-nav">
+          <button class="layer-btn active" id="l1-btn" onclick="showLayer(1)">Layer 1 — Status</button>
+          <button class="layer-btn" id="l2-btn" onclick="showLayer(2)">Layer 2 — Why</button>
+          <button class="layer-btn" id="l3-btn" onclick="showLayer(3)">Layer 3 — Actions</button>
+        </div>
+      </div>
+
+      <!-- LAYER 1 -->
+      <div id="layer-1">
+        <div class="stat-row">
+          <div class="stat-card clickable" onclick="showLayer(2)" title="Click to drill down">
+            <div class="status-dot" style="background:var(--amber)"></div>
+            <div class="stat-label">Cargo / Revenue ratio</div>
+            <div class="stat-value" style="color:var(--amber)">12.4%</div>
+            <div class="stat-sub warn">Above industry avg (11%)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Shipping cost this month</div>
+            <div class="stat-value">4,820 SAR</div>
+            <div class="stat-sub down">+610 SAR vs last month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total order revenue</div>
+            <div class="stat-value">38,870 SAR</div>
+            <div class="stat-sub up">+14% vs last month</div>
+          </div>
+          <div class="stat-card clickable" onclick="showLayer(3)" title="Click to see savings">
+            <div class="status-dot" style="background:var(--green)"></div>
+            <div class="stat-label">Potential monthly savings</div>
+            <div class="stat-value" style="color:var(--green)">340 SAR</div>
+            <div class="stat-sub">1 carrier rule change</div>
+          </div>
+        </div>
+
+        <!-- Ratio gauge -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Monthly cargo / revenue ratio</span>
+            <span style="font-size:11px;color:var(--text3)">Last 6 months</span>
+          </div>
+          <div class="card-body">
+            <div style="display:flex;align-items:flex-end;gap:8px;height:80px;margin-bottom:8px">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                <div style="font-size:10px;color:var(--green)">9.8%</div>
+                <div style="width:100%;background:var(--green);border-radius:4px 4px 0 0;height:33%"></div>
+                <div style="font-size:10px;color:var(--text3)">Nov</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                <div style="font-size:10px;color:var(--green)">10.2%</div>
+                <div style="width:100%;background:var(--green);border-radius:4px 4px 0 0;height:37%"></div>
+                <div style="font-size:10px;color:var(--text3)">Dec</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                <div style="font-size:10px;color:var(--amber)">11.5%</div>
+                <div style="width:100%;background:var(--amber);border-radius:4px 4px 0 0;height:47%"></div>
+                <div style="font-size:10px;color:var(--text3)">Jan</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                <div style="font-size:10px;color:var(--green)">10.8%</div>
+                <div style="width:100%;background:var(--green);border-radius:4px 4px 0 0;height:41%"></div>
+                <div style="font-size:10px;color:var(--text3)">Feb</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                <div style="font-size:10px;color:var(--amber)">11.9%</div>
+                <div style="width:100%;background:var(--amber);border-radius:4px 4px 0 0;height:51%"></div>
+                <div style="font-size:10px;color:var(--text3)">Mar</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                <div style="font-size:10px;color:var(--red);font-weight:500">12.4%</div>
+                <div style="width:100%;background:var(--red);border-radius:4px 4px 0 0;height:62%"></div>
+                <div style="font-size:10px;color:var(--text3);font-weight:500">Apr</div>
+              </div>
+            </div>
+            <div style="border-top:1px dashed var(--border);padding-top:8px;display:flex;align-items:center;gap:6px">
+              <span style="width:20px;height:1px;border-top:2px dashed var(--text3);display:inline-block"></span>
+              <span style="font-size:11px;color:var(--text3)">Industry average: 11%</span>
+              <span style="margin-left:auto;font-size:11px;color:var(--amber)">You are 1.4% above average this month</span>
+              <button class="btn" style="font-size:11px;padding:3px 10px" onclick="showLayer(2)">See why →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LAYER 2 -->
+      <div id="layer-2" style="display:none">
+        <div class="two-col">
+          <!-- By carrier -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Cost by carrier</span>
+            </div>
+            <div class="card-body">
+              <div class="bar-chart-row"><div class="bar-chart-label">SMSA</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--amber)"></div></div><div class="bar-val" style="color:var(--amber)">2,820 SAR</div></div>
+              <div class="bar-chart-row"><div class="bar-chart-label">Aramex</div><div class="bar-track"><div class="bar-fill" style="width:41%;background:var(--green)"></div></div><div class="bar-val" style="color:var(--green)">1,150 SAR</div></div>
+              <div class="bar-chart-row"><div class="bar-chart-label">J&T</div><div class="bar-track"><div class="bar-fill" style="width:22%;background:var(--blue)"></div></div><div class="bar-val">630 SAR</div></div>
+              <div class="bar-chart-row"><div class="bar-chart-label">SPL</div><div class="bar-track"><div class="bar-fill" style="width:8%;background:var(--text3)"></div></div><div class="bar-val">220 SAR</div></div>
+            </div>
+          </div>
+          <!-- By city -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Cost by destination city</span>
+            </div>
+            <div class="card-body">
+              <div class="bar-chart-row"><div class="bar-chart-label">Riyadh</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--blue)"></div></div><div class="bar-val">1,940 SAR</div></div>
+              <div class="bar-chart-row"><div class="bar-chart-label">Jeddah</div><div class="bar-track"><div class="bar-fill" style="width:68%;background:var(--blue)"></div></div><div class="bar-val">1,320 SAR</div></div>
+              <div class="bar-chart-row"><div class="bar-chart-label">Dammam</div><div class="bar-track"><div class="bar-fill" style="width:44%;background:var(--amber)"></div></div><div class="bar-val" style="color:var(--amber)">850 SAR</div></div>
+              <div class="bar-chart-row"><div class="bar-chart-label">Madinah</div><div class="bar-track"><div class="bar-fill" style="width:36%;background:var(--blue)"></div></div><div class="bar-val">710 SAR</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Products table -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Shipping cost by product</span>
+            <span style="font-size:11px;color:var(--red)">2 products above 15% threshold</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th style="width:110px">Avg price</th>
+                <th style="width:110px">Avg cargo cost</th>
+                <th style="width:110px">Cargo / Price</th>
+                <th style="width:130px">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="clickable-row" onclick="showLayer(3)"><td>Premium Abaya Set</td><td>450 SAR</td><td>40 SAR</td><td><span class="ratio-pill good">8.9%</span></td><td style="color:var(--green);font-size:11px">Profitable</td></tr>
+              <tr class="clickable-row" onclick="showLayer(3)"><td>Perfume 50ml</td><td>95 SAR</td><td>35 SAR</td><td><span class="ratio-pill bad">36.8%</span></td><td style="color:var(--red);font-size:11px">At risk — review pricing</td></tr>
+              <tr class="clickable-row" onclick="showLayer(3)"><td>Watch Gift Box</td><td>220 SAR</td><td>25 SAR</td><td><span class="ratio-pill warn">11.4%</span></td><td style="color:var(--amber);font-size:11px">Borderline</td></tr>
+              <tr class="clickable-row" onclick="showLayer(3)"><td>Accessories Bundle</td><td>380 SAR</td><td>30 SAR</td><td><span class="ratio-pill good">7.9%</span></td><td style="color:var(--green);font-size:11px">Profitable</td></tr>
+              <tr class="clickable-row" onclick="showLayer(3)"><td>Skincare Kit</td><td>75 SAR</td><td>28 SAR</td><td><span class="ratio-pill bad">37.3%</span></td><td style="color:var(--red);font-size:11px">At risk — review pricing</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Returns by carrier -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Returns by carrier</span>
+            <span style="font-size:11px;color:var(--text3)">Higher returns = hidden shipping cost</span>
+          </div>
+          <table>
+            <thead><tr><th style="width:110px">Carrier</th><th>Shipments</th><th>Returns</th><th>Return rate</th><th>Delivery rate</th><th>Verdict</th></tr></thead>
+            <tbody>
+              <tr><td><span class="carrier-badge">SMSA</span></td><td>612</td><td>24</td><td style="color:var(--green)">3.9%</td><td style="color:var(--green)">96.1%</td><td style="font-size:11px;color:var(--green)">Best performer</td></tr>
+              <tr><td><span class="carrier-badge">Aramex</span></td><td>348</td><td>19</td><td style="color:var(--amber)">5.5%</td><td style="color:var(--green)">94.3%</td><td style="font-size:11px;color:var(--amber)">Watch return rate</td></tr>
+              <tr><td><span class="carrier-badge">J&T</span></td><td>214</td><td>23</td><td style="color:var(--red)">10.7%</td><td style="color:var(--amber)">89.2%</td><td style="font-size:11px;color:var(--red)">High returns</td></tr>
+              <tr><td><span class="carrier-badge">SPL</span></td><td>110</td><td>24</td><td style="color:var(--red)">21.8%</td><td style="color:var(--red)">78.4%</td><td style="font-size:11px;color:var(--red)">Avoid for fragile items</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- LAYER 3 -->
+      <div id="layer-3" style="display:none">
+        <div class="insight-box blue">
+          <div class="insight-icon blue">💡</div>
+          <div class="insight-body">
+            <div class="insight-title" style="color:var(--blue-light)">Switch 47 SMSA orders to Aramex — save 340 SAR/month</div>
+            <div class="insight-text">For the Riyadh and Jeddah routes, Aramex is 18% cheaper per shipment than SMSA with a comparable delivery success rate (94% vs 96%). One rule change applies to all future orders automatically.</div>
+            <div class="insight-action">
+              <button class="btn primary" onclick="openModal()">Apply carrier rule</button>
+              <button class="btn" onclick="showLayer(2)">See data</button>
+            </div>
+          </div>
+        </div>
+        <div class="insight-box amber">
+          <div class="insight-icon amber">⚠</div>
+          <div class="insight-body">
+            <div class="insight-title" style="color:var(--amber)">Perfume 50ml and Skincare Kit have 37%+ cargo ratios</div>
+            <div class="insight-text">These products cost nearly as much to ship as they earn. Consider raising prices, offering free shipping only above a minimum order value, or bundling with higher-margin items.</div>
+            <div class="insight-action">
+              <button class="btn" style="border-color:var(--amber);color:var(--amber)" onclick="showLayer(2)">View products</button>
+            </div>
+          </div>
+        </div>
+        <div class="insight-box green">
+          <div class="insight-icon green">✓</div>
+          <div class="insight-body">
+            <div class="insight-title" style="color:var(--green-light)">Stop routing to SPL for orders above 200 SAR</div>
+            <div class="insight-text">SPL has a 21.8% return rate — each return costs an additional 18–25 SAR in reverse shipping. For high-value orders, SMSA or Aramex reduces this risk significantly.</div>
+            <div class="insight-action">
+              <button class="btn primary" onclick="openModal()">Set routing rule</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carrier comparison table -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Full carrier comparison</span></div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width:100px">Carrier</th>
+                <th>Orders</th>
+                <th>Total cost</th>
+                <th>Avg cost</th>
+                <th>Delivery rate</th>
+                <th>Return rate</th>
+                <th>Recommendation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><span class="carrier-badge">SMSA</span></td><td>612</td><td>2,820 SAR</td><td>60 SAR</td><td style="color:var(--green)">96.1%</td><td style="color:var(--green)">3.9%</td><td style="font-size:11px;color:var(--amber)">Consider switching for cost</td></tr>
+              <tr><td><span class="carrier-badge">Aramex</span></td><td>348</td><td>1,150 SAR</td><td>50 SAR</td><td style="color:var(--green)">94.3%</td><td style="color:var(--amber)">5.5%</td><td style="font-size:11px;color:var(--green)">Best price / success balance</td></tr>
+              <tr><td><span class="carrier-badge">J&T</span></td><td>214</td><td>630 SAR</td><td>35 SAR</td><td style="color:var(--amber)">89.2%</td><td style="color:var(--red)">10.7%</td><td style="font-size:11px;color:var(--text3)">Good for Riyadh only</td></tr>
+              <tr><td><span class="carrier-badge">SPL</span></td><td>110</td><td>220 SAR</td><td>18 SAR</td><td style="color:var(--red)">78.4%</td><td style="color:var(--red)">21.8%</td><td style="font-size:11px;color:var(--red)">Avoid — high return rate</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /tab-profitability -->
+
+    <!-- Other tab placeholder -->
+    <div id="tab-other" style="display:none">
+      <div style="color:var(--text2);padding:60px 40px;text-align:center">
+        <div style="font-size:32px;margin-bottom:16px">📊</div>
+        <div style="font-weight:500;margin-bottom:8px;font-size:15px" id="tab-other-title">Overview</div>
+        <div style="font-size:12px;color:var(--text3)">Switch to the Profitability tab to see the new feature.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="rule-modal" onclick="handleModalOverlay(event)">
+  <div class="modal">
+    <div class="modal-title">Update carrier rule</div>
+    <div style="margin-bottom:16px">
+      <div class="modal-row"><span class="modal-key">Current default</span><span class="modal-val">SMSA</span></div>
+      <div class="modal-row"><span class="modal-key">Monthly cost</span><span class="modal-val" style="color:var(--red)">2,820 SAR</span></div>
+    </div>
+    <div style="background:var(--green-bg);border:1px solid var(--green);border-radius:var(--radius);padding:12px;margin-bottom:16px">
+      <div style="color:var(--green-light);font-weight:500;margin-bottom:4px">Switch default to Aramex</div>
+      <div style="font-size:12px;color:var(--text2)">Estimated monthly savings: <strong style="color:var(--green-light)">340 SAR</strong></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">Delivery success rate: 94% vs SMSA 96% — minimal trade-off</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn primary" style="flex:1" onclick="applyRule()">Apply rule</button>
+      <button class="btn" style="flex:1" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(el, tab) {
+  document.querySelectorAll('.atab').forEach(function(t){t.classList.remove('active')});
+  el.classList.add('active');
+  if(tab === 'profitability') {
+    document.getElementById('tab-profitability').style.display = 'block';
+    document.getElementById('tab-other').style.display = 'none';
+  } else {
+    document.getElementById('tab-profitability').style.display = 'none';
+    document.getElementById('tab-other').style.display = 'block';
+    document.getElementById('tab-other-title').textContent = el.textContent.trim();
+  }
+}
+
+function showLayer(n) {
+  [1,2,3].forEach(function(i){
+    document.getElementById('layer-'+i).style.display = (i===n) ? 'block' : 'none';
+    var btn = document.getElementById('l'+i+'-btn');
+    btn.classList.toggle('active', i===n);
+  });
+}
+
+function openModal(){ document.getElementById('rule-modal').classList.add('open') }
+function closeModal(){ document.getElementById('rule-modal').classList.remove('open') }
+function handleModalOverlay(e){ if(e.target===document.getElementById('rule-modal')) closeModal() }
+function applyRule(){
+  closeModal();
+  var insight = document.querySelector('.insight-box.blue');
+  if(insight){
+    insight.style.background='var(--green-bg)';
+    insight.style.borderColor='var(--green)';
+    insight.querySelector('.insight-title').style.color='var(--green-light)';
+    insight.querySelector('.insight-title').textContent='Rule applied — Aramex is now your default carrier for Riyadh & Jeddah routes';
+    insight.querySelector('.insight-text').textContent='Changes will apply to all new orders. You can modify this rule at any time in Shipping Partners > Automation Rules.';
+    insight.querySelector('.insight-action').innerHTML='<span style="font-size:12px;color:var(--green-light)">✓ Applied successfully</span>';
+  }
+}
+</script>
+</body>
+</html>
