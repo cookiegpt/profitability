@@ -290,9 +290,9 @@ tr.clickable-row:hover td{background:var(--bg3);cursor:pointer}
           <div class="section-sub">Track shipping cost vs revenue, identify drain products and optimise carrier routing.</div>
         </div>
         <div class="layer-nav">
-          <button class="layer-btn active" id="l1-btn" onclick="showLayer(1)">Layer 1 — Status</button>
-          <button class="layer-btn" id="l2-btn" onclick="showLayer(2)">Layer 2 — Why</button>
-          <button class="layer-btn" id="l3-btn" onclick="showLayer(3)">Layer 3 — Actions</button>
+          <button class="layer-btn active" id="l1-btn" onclick="showLayer(1)">Overview</button>
+          <button class="layer-btn" id="l2-btn" onclick="showLayer(2)">Breakdown</button>
+          <button class="layer-btn" id="l3-btn" onclick="showLayer(3)">Actions</button>
         </div>
       </div>
 
@@ -301,7 +301,7 @@ tr.clickable-row:hover td{background:var(--bg3);cursor:pointer}
         <div class="stat-row">
           <div class="stat-card clickable" onclick="showLayer(2)" title="Click to drill down">
             <div class="status-dot" style="background:var(--amber)"></div>
-            <div class="stat-label">Cargo / Revenue ratio</div>
+            <div class="stat-label">Delivery cost / Revenue ratio</div>
             <div class="stat-value" style="color:var(--amber)">12.4%</div>
             <div class="stat-sub warn">Above industry avg (11%)</div>
           </div>
@@ -319,14 +319,14 @@ tr.clickable-row:hover td{background:var(--bg3);cursor:pointer}
             <div class="status-dot" style="background:var(--green)"></div>
             <div class="stat-label">Potential monthly savings</div>
             <div class="stat-value" style="color:var(--green)">340 SAR</div>
-            <div class="stat-sub">1 carrier rule change</div>
+            <div class="stat-sub">Based on shipment weight × carrier rates</div>
           </div>
         </div>
 
         <!-- Ratio gauge -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Monthly cargo / revenue ratio</span>
+            <span class="card-title">Monthly delivery cost / revenue ratio</span>
             <span style="font-size:11px;color:var(--text3)">Last 6 months</span>
           </div>
           <div class="card-body">
@@ -404,7 +404,7 @@ tr.clickable-row:hover td{background:var(--bg3);cursor:pointer}
         <!-- Products table -->
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Shipping cost by product</span>
+            <span class="card-title">Delivery cost by product</span>
             <span style="font-size:11px;color:var(--red)">2 products above 15% threshold</span>
           </div>
           <table>
@@ -412,17 +412,17 @@ tr.clickable-row:hover td{background:var(--bg3);cursor:pointer}
               <tr>
                 <th>Product</th>
                 <th style="width:110px">Avg price</th>
-                <th style="width:110px">Avg cargo cost</th>
-                <th style="width:110px">Cargo / Price</th>
+                <th style="width:110px">Avg delivery cost</th>
+                <th style="width:110px">Cost / Price</th>
                 <th style="width:130px">Status</th>
               </tr>
             </thead>
             <tbody>
               <tr class="clickable-row" onclick="showLayer(3)"><td>Premium Abaya Set</td><td>450 SAR</td><td>40 SAR</td><td><span class="ratio-pill good">8.9%</span></td><td style="color:var(--green);font-size:11px">Profitable</td></tr>
-              <tr class="clickable-row" onclick="showLayer(3)"><td>Perfume 50ml</td><td>95 SAR</td><td>35 SAR</td><td><span class="ratio-pill bad">36.8%</span></td><td style="color:var(--red);font-size:11px">At risk — review pricing</td></tr>
+              <tr class="clickable-row" onclick="showLayer(3)"><td>Phone Case 3-Pack</td><td>95 SAR</td><td>35 SAR</td><td><span class="ratio-pill bad">36.8%</span></td><td style="color:var(--red);font-size:11px">At risk — review pricing</td></tr>
               <tr class="clickable-row" onclick="showLayer(3)"><td>Watch Gift Box</td><td>220 SAR</td><td>25 SAR</td><td><span class="ratio-pill warn">11.4%</span></td><td style="color:var(--amber);font-size:11px">Borderline</td></tr>
               <tr class="clickable-row" onclick="showLayer(3)"><td>Accessories Bundle</td><td>380 SAR</td><td>30 SAR</td><td><span class="ratio-pill good">7.9%</span></td><td style="color:var(--green);font-size:11px">Profitable</td></tr>
-              <tr class="clickable-row" onclick="showLayer(3)"><td>Skincare Kit</td><td>75 SAR</td><td>28 SAR</td><td><span class="ratio-pill bad">37.3%</span></td><td style="color:var(--red);font-size:11px">At risk — review pricing</td></tr>
+              <tr class="clickable-row" onclick="showLayer(3)"><td>Small Candle Set</td><td>75 SAR</td><td>28 SAR</td><td><span class="ratio-pill bad">37.3%</span></td><td style="color:var(--red);font-size:11px">At risk — review pricing</td></tr>
             </tbody>
           </table>
         </div>
@@ -451,9 +451,9 @@ tr.clickable-row:hover td{background:var(--bg3);cursor:pointer}
           <div class="insight-icon blue">💡</div>
           <div class="insight-body">
             <div class="insight-title" style="color:var(--blue-light)">Switch 47 SMSA orders to Aramex — save 340 SAR/month</div>
-            <div class="insight-text">For the Riyadh and Jeddah routes, Aramex is 18% cheaper per shipment than SMSA with a comparable delivery success rate (94% vs 96%). One rule change applies to all future orders automatically.</div>
+            <div class="insight-text">For the Riyadh and Jeddah routes, Aramex is 18% cheaper per shipment than SMSA with a comparable delivery success rate (94% vs 96%). Savings are calculated based on average shipment weight (1.2 kg) × current carrier rate difference. One rule change applies to all future orders automatically.</div>
             <div class="insight-action">
-              <button class="btn primary" onclick="openModal()">Apply carrier rule</button>
+              <button class="btn primary" onclick="openModal()">Apply delivery company rule</button>
               <button class="btn" onclick="showLayer(2)">See data</button>
             </div>
           </div>
@@ -461,8 +461,8 @@ tr.clickable-row:hover td{background:var(--bg3);cursor:pointer}
         <div class="insight-box amber">
           <div class="insight-icon amber">⚠</div>
           <div class="insight-body">
-            <div class="insight-title" style="color:var(--amber)">Perfume 50ml and Skincare Kit have 37%+ cargo ratios</div>
-            <div class="insight-text">These products cost nearly as much to ship as they earn. Consider raising prices, offering free shipping only above a minimum order value, or bundling with higher-margin items.</div>
+            <div class="insight-title" style="color:var(--amber)">Phone Case 3-Pack and Small Candle Set have 37%+ delivery cost ratios</div>
+            <div class="insight-text">These products cost nearly as much to ship as they earn. Their low unit price relative to weight makes them unprofitable at current delivery rates. Consider raising prices, offering free shipping only above a minimum order value, or bundling with higher-margin items.</div>
             <div class="insight-action">
               <button class="btn" style="border-color:var(--amber);color:var(--amber)" onclick="showLayer(2)">View products</button>
             </div>
@@ -471,21 +471,69 @@ tr.clickable-row:hover td{background:var(--bg3);cursor:pointer}
         <div class="insight-box green">
           <div class="insight-icon green">✓</div>
           <div class="insight-body">
-            <div class="insight-title" style="color:var(--green-light)">Stop routing to SPL for orders above 200 SAR</div>
-            <div class="insight-text">SPL has a 21.8% return rate — each return costs an additional 18–25 SAR in reverse shipping. For high-value orders, SMSA or Aramex reduces this risk significantly.</div>
+            <div class="insight-title" style="color:var(--green-light)">Prefer SMSA or Aramex for orders above 200 SAR</div>
+            <div class="insight-text">For high-value orders, SMSA and Aramex have stronger delivery rates on this segment. This can help reduce reverse shipping costs and improve the customer experience on your most important orders.</div>
             <div class="insight-action">
               <button class="btn primary" onclick="openModal()">Set routing rule</button>
             </div>
           </div>
         </div>
 
-        <!-- Carrier comparison table -->
+        <!-- Top 5 problematic orders -->
         <div class="card">
-          <div class="card-header"><span class="card-title">Full carrier comparison</span></div>
+          <div class="card-header">
+            <span class="card-title">Top 5 orders with highest delivery cost ratio</span>
+            <span style="font-size:11px;color:var(--text3)">Ranked by delivery cost / order value</span>
+          </div>
           <table>
             <thead>
               <tr>
-                <th style="width:100px">Carrier</th>
+                <th style="width:110px">Order ID</th>
+                <th>Product</th>
+                <th style="width:100px">Destination</th>
+                <th style="width:90px">Order value</th>
+                <th style="width:100px">Delivery cost</th>
+                <th style="width:90px">Weight</th>
+                <th style="width:90px">Cost ratio</th>
+                <th style="width:110px">Delivery co.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="color:var(--blue-light)">#ORD-8821</td><td>Small Candle Set × 1</td><td>Madinah</td><td>75 SAR</td><td style="color:var(--red)">42 SAR</td><td>1.8 kg</td><td><span class="ratio-pill bad">56%</span></td><td><span class="carrier-badge">SPL</span></td></tr>
+              <tr><td style="color:var(--blue-light)">#ORD-7743</td><td>Phone Case 3-Pack × 1</td><td>Dammam</td><td>95 SAR</td><td style="color:var(--red)">40 SAR</td><td>1.5 kg</td><td><span class="ratio-pill bad">42%</span></td><td><span class="carrier-badge">SMSA</span></td></tr>
+              <tr><td style="color:var(--blue-light)">#ORD-9102</td><td>Small Candle Set × 2</td><td>Jeddah</td><td>150 SAR</td><td style="color:var(--red)">58 SAR</td><td>3.6 kg</td><td><span class="ratio-pill bad">39%</span></td><td><span class="carrier-badge">J&T</span></td></tr>
+              <tr><td style="color:var(--blue-light)">#ORD-6619</td><td>Phone Case 3-Pack × 1</td><td>Riyadh</td><td>95 SAR</td><td style="color:var(--amber)">36 SAR</td><td>1.5 kg</td><td><span class="ratio-pill bad">38%</span></td><td><span class="carrier-badge">SMSA</span></td></tr>
+              <tr><td style="color:var(--blue-light)">#ORD-5508</td><td>Watch Gift Box × 1</td><td>Madinah</td><td>220 SAR</td><td style="color:var(--amber)">32 SAR</td><td>1.2 kg</td><td><span class="ratio-pill warn">14.5%</span></td><td><span class="carrier-badge">SPL</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Actionable Insights -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Insights for your business</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+            <div style="background:var(--bg3);border-radius:var(--radius);padding:12px 14px;border-left:3px solid var(--blue)">
+              <div style="font-size:12px;font-weight:500;margin-bottom:3px">Your busiest delivery city (Riyadh) is also your most expensive route</div>
+              <div style="font-size:11px;color:var(--text2)">Riyadh accounts for 40% of your total shipping spend. Switching Riyadh orders from SMSA to Aramex could reduce this by ~18% without a meaningful drop in delivery success rate.</div>
+            </div>
+            <div style="background:var(--bg3);border-radius:var(--radius);padding:12px 14px;border-left:3px solid var(--amber)">
+              <div style="font-size:12px;font-weight:500;margin-bottom:3px">High-value orders may benefit from a different routing setup</div>
+              <div style="font-size:11px;color:var(--text2)">For orders above 200 SAR, delivery companies with stronger success rates on that segment can reduce reverse shipping costs and protect customer experience. Setting a value-based routing rule takes just one step.</div>
+            </div>
+            <div style="background:var(--bg3);border-radius:var(--radius);padding:12px 14px;border-left:3px solid var(--green)">
+              <div style="font-size:12px;font-weight:500;margin-bottom:3px">Lightweight, low-value items are dragging your ratio up</div>
+              <div style="font-size:11px;color:var(--text2)">Items under 100 SAR with weights above 1 kg face a structural problem — delivery cost is a large fixed share of revenue. Setting a minimum order value of 120 SAR for free shipping could improve your overall ratio by an estimated 1.2–1.8 points.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carrier comparison table -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Full delivery company comparison</span></div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width:100px">Company</th>
                 <th>Orders</th>
                 <th>Total cost</th>
                 <th>Avg cost</th>
@@ -495,10 +543,10 @@ tr.clickable-row:hover td{background:var(--bg3);cursor:pointer}
               </tr>
             </thead>
             <tbody>
-              <tr><td><span class="carrier-badge">SMSA</span></td><td>612</td><td>2,820 SAR</td><td>60 SAR</td><td style="color:var(--green)">96.1%</td><td style="color:var(--green)">3.9%</td><td style="font-size:11px;color:var(--amber)">Consider switching for cost</td></tr>
-              <tr><td><span class="carrier-badge">Aramex</span></td><td>348</td><td>1,150 SAR</td><td>50 SAR</td><td style="color:var(--green)">94.3%</td><td style="color:var(--amber)">5.5%</td><td style="font-size:11px;color:var(--green)">Best price / success balance</td></tr>
-              <tr><td><span class="carrier-badge">J&T</span></td><td>214</td><td>630 SAR</td><td>35 SAR</td><td style="color:var(--amber)">89.2%</td><td style="color:var(--red)">10.7%</td><td style="font-size:11px;color:var(--text3)">Good for Riyadh only</td></tr>
-              <tr><td><span class="carrier-badge">SPL</span></td><td>110</td><td>220 SAR</td><td>18 SAR</td><td style="color:var(--red)">78.4%</td><td style="color:var(--red)">21.8%</td><td style="font-size:11px;color:var(--red)">Avoid — high return rate</td></tr>
+              <tr><td><span class="carrier-badge">SMSA</span></td><td>612</td><td>2,820 SAR</td><td>60 SAR</td><td style="color:var(--green)">96.1%</td><td style="color:var(--green)">3.9%</td><td style="font-size:11px;color:var(--amber)">Strong performer, higher cost</td></tr>
+              <tr><td><span class="carrier-badge">Aramex</span></td><td>348</td><td>1,150 SAR</td><td>50 SAR</td><td style="color:var(--green)">94.3%</td><td style="color:var(--amber)">5.5%</td><td style="font-size:11px;color:var(--green)">Best cost / success balance</td></tr>
+              <tr><td><span class="carrier-badge">J&T</span></td><td>214</td><td>630 SAR</td><td>35 SAR</td><td style="color:var(--amber)">89.2%</td><td style="color:var(--red)">10.7%</td><td style="font-size:11px;color:var(--text3)">Best for Riyadh same-day</td></tr>
+              <tr><td><span class="carrier-badge">SPL</span></td><td>110</td><td>220 SAR</td><td>18 SAR</td><td style="color:var(--red)">78.4%</td><td style="color:var(--red)">21.8%</td><td style="font-size:11px;color:var(--amber)">Best for low-value, light orders</td></tr>
             </tbody>
           </table>
         </div>
@@ -521,7 +569,7 @@ tr.clickable-row:hover td{background:var(--bg3);cursor:pointer}
 <!-- Modal -->
 <div class="modal-overlay" id="rule-modal" onclick="handleModalOverlay(event)">
   <div class="modal">
-    <div class="modal-title">Update carrier rule</div>
+    <div class="modal-title">Update delivery company rule</div>
     <div style="margin-bottom:16px">
       <div class="modal-row"><span class="modal-key">Current default</span><span class="modal-val">SMSA</span></div>
       <div class="modal-row"><span class="modal-key">Monthly cost</span><span class="modal-val" style="color:var(--red)">2,820 SAR</span></div>
@@ -570,7 +618,7 @@ function applyRule(){
     insight.style.background='var(--green-bg)';
     insight.style.borderColor='var(--green)';
     insight.querySelector('.insight-title').style.color='var(--green-light)';
-    insight.querySelector('.insight-title').textContent='Rule applied — Aramex is now your default carrier for Riyadh & Jeddah routes';
+    insight.querySelector('.insight-title').textContent='Rule applied — Aramex is now your default delivery company for Riyadh & Jeddah routes';
     insight.querySelector('.insight-text').textContent='Changes will apply to all new orders. You can modify this rule at any time in Shipping Partners > Automation Rules.';
     insight.querySelector('.insight-action').innerHTML='<span style="font-size:12px;color:var(--green-light)">✓ Applied successfully</span>';
   }
